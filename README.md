@@ -3,7 +3,7 @@
 Mixins for Loopback, to easily:
 
 - disable remote methods (disable, disableAll)
-- setup new ones from the model configuration file. (not implemented yet)
+- setup new ones from the model configuration file.
  
 It works with both Loopback 2 and 3.
 
