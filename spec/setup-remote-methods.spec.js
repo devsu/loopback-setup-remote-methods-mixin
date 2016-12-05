@@ -24,7 +24,7 @@ describe('setupRemoteMethods', () => {
 
       it('should disable the methods, even if they are in the ACL', () => {
         setupRemoteMethods(MyModel, options);
-        expect(MyModel.disableRemoteMethodByName.calls.count()).toEqual(4);
+        expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(4);
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('create');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('findById');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('one');
@@ -39,7 +39,7 @@ describe('setupRemoteMethods', () => {
 
       it('should disable the methods, except if they are in the ACL', () => {
         setupRemoteMethods(MyModel, options);
-        expect(MyModel.disableRemoteMethodByName.calls.count()).toEqual(3);
+        expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(3);
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('create');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('findById');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('prototype.five');
@@ -54,7 +54,7 @@ describe('setupRemoteMethods', () => {
 
       it('should disable the methods, except if they are in the ACL', () => {
         setupRemoteMethods(MyModel, options);
-        expect(MyModel.disableRemoteMethodByName.calls.count()).toEqual(3);
+        expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(3);
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('create');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('findById');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('prototype.five');
@@ -77,7 +77,7 @@ describe('setupRemoteMethods', () => {
 
       it('should disable all methods except the options, even if they are in the ACL', () => {
         setupRemoteMethods(MyModel, options);
-        expect(MyModel.disableRemoteMethodByName.calls.count()).toEqual(5);
+        expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(5);
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('two');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('three');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('four');
@@ -96,7 +96,7 @@ describe('setupRemoteMethods', () => {
 
       it('should disable all methods, except the options or if they are in the ACL', () => {
         setupRemoteMethods(MyModel, options);
-        expect(MyModel.disableRemoteMethodByName.calls.count()).toEqual(3);
+        expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(3);
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('four');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('prototype.six');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('findById');
@@ -115,7 +115,7 @@ describe('setupRemoteMethods', () => {
 
       it('should disable all methods, except the options or if they are in the ACL', () => {
         setupRemoteMethods(MyModel, options);
-        expect(MyModel.disableRemoteMethodByName.calls.count()).toEqual(3);
+        expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(3);
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('four');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('prototype.six');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('findById');
@@ -151,7 +151,7 @@ describe('setupRemoteMethods', () => {
 
       it('should add the remote method using the received definition', () => {
         setupRemoteMethods(MyModel, options);
-        expect(MyModel.remoteMethod.calls.count()).toEqual(2);
+        expect(MyModel.remoteMethod).toHaveBeenCalledTimes(2);
         expect(MyModel.remoteMethod).toHaveBeenCalledWith('greet', methodDefinition);
         expect(MyModel.remoteMethod).toHaveBeenCalledWith('ping', methodDefinition2);
       });
@@ -177,7 +177,7 @@ describe('setupRemoteMethods', () => {
 
       it('should add the remote method using the received definition', () => {
         setupRemoteMethods(MyModel, options);
-        expect(MyModel.remoteMethod.calls.count()).toEqual(2);
+        expect(MyModel.remoteMethod).toHaveBeenCalledTimes(2);
         expect(MyModel.remoteMethod).toHaveBeenCalledWith('greet', methodDefinition);
         expect(MyModel.remoteMethod).toHaveBeenCalledWith('ping', methodDefinition2);
       });

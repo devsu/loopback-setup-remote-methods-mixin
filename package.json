@@ -4,7 +4,7 @@
   "description": "Mixin for Loopback, to easily disable remote methods and setup new ones from the model configuration file.",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/jasmine-node/bin/jasmine-node spec",
+    "test": "./node_modules/jasmine/bin/jasmine.js",
     "lint": "eslint .",
     "posttest": "npm run lint"
   },
@@ -28,7 +28,7 @@
   "devDependencies": {
     "eslint": "^3.11.1",
     "eslint-config-loopback": "^6.0.0",
-    "jasmine-node": "^2.0.0",
+    "jasmine": "^2.5.2",
     "loopback": "^3.0.0-alpha.1"
   },
   "dependencies": {

@@ -150,7 +150,7 @@ module.exports = function(Employee) {
 };
 ```
 
-#### Add using Method name
+#### Add using a method that provides the definition
 
 There are some cases that you might want to call a method to return the definition. This happens for example if one of the properties is calculated. In this case, you might want to just add the method name.
 
