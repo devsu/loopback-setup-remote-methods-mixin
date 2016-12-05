@@ -49,6 +49,7 @@ function getModelMock() {
     }
   };
   theModel.disableRemoteMethodByName = jasmine.createSpy('disableRemoteMethodByName');
+  theModel.remoteMethod = jasmine.createSpy('remoteMethod');
   return theModel;
 }
 

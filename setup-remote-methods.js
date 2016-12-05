@@ -28,13 +28,44 @@ module.exports = (Model, options) => {
         methodsToDisable = _.difference(methodsToDisable, authorizedAclMethods);
       }
 
+      if (options.add) {
+        addRemoteMethods(Model, options.add);
+      }
+
       if (methodsToDisable.length) {
-        methodsToDisable.forEach(methodName => {
-          Model.disableRemoteMethodByName(methodName);
-        });
-        debug('Model `%s`: Disable remote methods:  `%s`', Model.modelName,
-          methodsToDisable.join(', '));
+        disableRemoteMethods(Model, methodsToDisable);
       }
     });
   });
 };
+
+function addRemoteMethods(Model, addOptions) {
+  let keys = Object.keys(addOptions);
+  keys.forEach(key => {
+    let value = addOptions[key];
+    addRemoteMethod(Model, key, value);
+  });
+}
+
+function addRemoteMethod(Model, key, value) {
+  if (typeof value === 'object' && value !== null) {
+    Model.remoteMethod(key, value);
+    return;
+  }
+
+  if (typeof value === 'string' || value instanceof String) {
+    let components = value.split('.');
+    let method = components.reduce((obj, currentComponent) => {
+      return obj[currentComponent];
+    }, Model);
+    Model.remoteMethod(key, method());
+  }
+}
+
+function disableRemoteMethods(Model, methodsToDisable) {
+  methodsToDisable.forEach(methodName => {
+    Model.disableRemoteMethodByName(methodName);
+  });
+  debug('Model `%s`: Disable remote methods:  `%s`', Model.modelName,
+    methodsToDisable.join(', '));
+}
