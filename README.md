@@ -126,7 +126,7 @@ There are two ways to define the new remote method.
   }
 ```
 
-Then you can have the method in your model as usual:
+Then you can have the method implemented in your model as usual:
 
 ```javascript
 const Promise = require('bluebird');
@@ -162,7 +162,7 @@ There are some cases that you might want to call a method to return the definiti
   }
 ```
 
-In order to avoid having this definition in the model definition file (which is one of the motivations of this functionality), we can have the definition on a different file, let's say we name it **remoteMethods.js**
+In order to avoid having this definition in the model file (which is one of the motivations of this functionality), we can have the definition on a different file, let's say we name it **remote-methods.js**
 
 ```javascript
 module.exports = {
@@ -192,13 +192,13 @@ function extractAccessTokenFromHeaders(context) {
 
 ```
 
-Then, on your model definition JSON file, you would need to have something like:
+Then, on your model, you would need to have something like:
 
 ```javascript
 module.exports = function(Employee) {
 
   // Include the definitions in the model for the mixin to be able to get them
-  Employee.remotesDefinitions = require('./remoteMethods');
+  Employee.remotesDefinitions = require('./remote-methods');
 
   // The implementation of your remote method  
   Employee.greet = msg => {
