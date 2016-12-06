@@ -64,7 +64,7 @@ Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html
 
 ### disable
 
-Disable the defined remote methods. For example, to disable the create remote method:
+Disable the defined remote methods. For example, to disable the create remote, and the updateAttributes methods:
 
 ```json
   "mixins": {
@@ -76,7 +76,7 @@ Disable the defined remote methods. For example, to disable the create remote me
 
 ### disableAllExcept
 
-Disable all the remote methods, except the defined on the options. For example, to disable all except the create method: 
+Disable all the remote methods, except the defined on the options. For example, to disable all except the create and the updateAttributes methods: 
 
 ```json
   "mixins": {
