@@ -5,7 +5,7 @@ Mixins for Loopback, to easily:
 - disable remote methods
 - setup new remote methods
 
-From the model definition file. It works with both Loopback 2 and 3.
+from the model definition file. It works with both Loopback 2 and 3.
 
 ## Installation
 
