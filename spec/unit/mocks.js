@@ -17,7 +17,7 @@ function getModelMock() {
           {'name': 'findById', 'isStatic': true},
           {'name': 'one', 'isStatic': true},
           {'name': 'two', 'isStatic': true},
-          {'name': 'three', 'isStatic': true},
+          {'name': 'three', 'isStatic': false},
           {'name': 'four', 'isStatic': true},
           {'name': 'five', 'isStatic': false},
           {'name': 'six', 'isStatic': false},

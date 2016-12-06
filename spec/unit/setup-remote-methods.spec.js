@@ -1,6 +1,6 @@
 'use strict';
 
-const setupRemoteMethods = require('../setup-remote-methods');
+const setupRemoteMethods = require('../../setup-remote-methods');
 const mocks = require('./mocks');
 
 describe('setupRemoteMethods', () => {
@@ -79,7 +79,7 @@ describe('setupRemoteMethods', () => {
         setupRemoteMethods(MyModel, options);
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(5);
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('two');
-        expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('three');
+        expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('prototype.three');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('four');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('prototype.six');
         expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledWith('findById');
@@ -103,7 +103,7 @@ describe('setupRemoteMethods', () => {
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('create');
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('one');
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('two');
-        expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('three');
+        expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('prototype.three');
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('prototype.five');
       });
     });
@@ -122,7 +122,7 @@ describe('setupRemoteMethods', () => {
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('create');
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('one');
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('two');
-        expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('three');
+        expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('prototype.three');
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('prototype.five');
       });
     });

@@ -25,7 +25,9 @@ module.exports = (Model, options) => {
 
       if (options.ignoreACL !== true) {
         let authorizedAclMethods = Utils.getAuthorizedAclMethods(Model);
-        methodsToDisable = _.difference(methodsToDisable, authorizedAclMethods);
+        methodsToDisable = _.differenceWith(methodsToDisable, authorizedAclMethods, (a, b) => {
+          return a === b || a === 'prototype.' + b;
+        });
       }
 
       if (options.add) {
