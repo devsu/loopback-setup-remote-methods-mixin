@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require('../../lib/utils');
+const utils = require('../../../lib/utils');
 const mocks = require('../mocks');
 
 describe('utils', () => {
