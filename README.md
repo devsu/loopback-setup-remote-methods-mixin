@@ -2,10 +2,10 @@
 
 Mixins for Loopback, to easily:
 
-- disable remote methods (disable, disableAll)
-- setup new ones from the model configuration file.
- 
-It works with both Loopback 2 and 3.
+- disable remote methods
+- setup new remote methods
+
+From the model definition file. It works with both Loopback 2 and 3.
 
 ## Installation
 
@@ -31,7 +31,7 @@ First, modify your server/model-config.json to include the path to this module:
 }
 ```
 
-Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html#enable-a-model-with-mixins) from your models:
+Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html#enable-a-model-with-mixins) from your model definition files:
 
 ```json
 {
@@ -64,7 +64,7 @@ Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html
 
 ### disable
 
-Disable the defined remote methods. For example, to disable the create remote, and the updateAttributes methods:
+Disable the defined remote methods. For example, to disable the `create` and the `updateAttributes` remote methods:
 
 ```json
   "mixins": {
@@ -76,7 +76,7 @@ Disable the defined remote methods. For example, to disable the create remote, a
 
 ### disableAllExcept
 
-Disable all the remote methods, except the defined on the options. For example, to disable all except the create and the updateAttributes methods: 
+Disable all the remote methods, except the defined on the options. For example, to disable all except `create` and `updateAttributes` remote methods: 
 
 ```json
   "mixins": {
@@ -150,7 +150,7 @@ module.exports = function(Employee) {
 
 #### Add using a method that provides the definition
 
-There are some cases that you might want to call a method to return the definition. This happens for example if one of the properties is calculated. In this case, you might want to just add the method name.
+There are some cases that you might want to call a method to return the definition. This happens for example if one of the properties is calculated. In this case, you can just add the method name that provides the definition.
 
 ```json
   "mixins": {
