@@ -56,7 +56,7 @@ Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html
   "methods": {},
   "mixins": {
     "SetupRemoteMethods": {
-      "disableAllExcept": ["create"]
+      "disableAllExcept": ["create", "prototype.updateAttributes"]
     }
   }
 }
@@ -71,7 +71,7 @@ Disable the defined remote methods. For example, to disable the create remote me
 ```json
   "mixins": {
     "SetupRemoteMethods": {
-      "disable": ["create"]
+      "disable": ["create", "prototype.updateAttributes"]
     }
   }
 ```
@@ -83,7 +83,7 @@ Disable all the remote methods, except the defined on the options. For example, 
 ```json
   "mixins": {
     "SetupRemoteMethods": {
-      "disableAllExcept": ["create"]
+      "disableAllExcept": ["create", "prototype.updateAttributes"]
     }
   }
 ```
@@ -98,7 +98,7 @@ This option works together with `disable` and `disableAllExcept`. If **true**, i
   "mixins": {
     "SetupRemoteMethods": {
       "ignoreACL": true,
-      "disableAllExcept": ["create"]
+      "disableAllExcept": ["create", "prototype.updateAttributes"]
     }
   }
 ```
