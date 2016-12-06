@@ -198,7 +198,7 @@ Then, on your model definition JSON file, you would need to have something like:
 module.exports = function(Employee) {
 
   // Include the definitions in the model for the mixin to be able to get them
-  Employee.remotesDefinitions = require('./remote-methods');
+  Employee.remotesDefinitions = require('./remoteMethods');
 
   // The implementation of your remote method  
   Employee.greet = msg => {
