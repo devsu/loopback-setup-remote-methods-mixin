@@ -7,8 +7,6 @@ Mixins for Loopback, to easily:
  
 It works with both Loopback 2 and 3.
 
-Disabling remote methods feature is based on the discussion at [https://github.com/strongloop/loopback/issues/651](https://github.com/strongloop/loopback/issues/651)
-
 ## Installation
 
 ```bash
@@ -211,3 +209,11 @@ module.exports = function(Employee) {
   
 };
 ```
+
+## Credits
+
+Disabling remote methods feature is based on the discussion at [https://github.com/strongloop/loopback/issues/651](https://github.com/strongloop/loopback/issues/651).
+
+The code for `disable`, `disableAll` and `ignoreACL` options is based on this [gist](https://gist.github.com/ebarault/1c3e43e19735f03dee8260471f8d3545) from [ebarault](https://github.com/ebarault), which was based on another [gist](https://gist.github.com/drmikecrowe/7ec75265fda2788e1c08249ece505a44) from [drmikecrowe](https://github.com/drmikecrowe).
+
+Module created by [c3s4r](https://github.com/c3s4r) for [Devsu](http://devsu.com/).
