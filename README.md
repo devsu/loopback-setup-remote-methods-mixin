@@ -33,7 +33,7 @@ Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html
   "mixins": {
     "SetupRemoteMethods": {
       "disableAllExcept": ["create", "prototype.updateAttributes"],
-      "addFromFile": './common/models/mymodel-remotes.js'
+      "addFromFile": "./common/models/mymodel-remotes.js"
     }
   }
 ...
@@ -133,7 +133,7 @@ module.exports = function(Employee) {
 
 #### Add using JS in the model
 
-**Deprecated**, use [addFromFile](#addFromFile) instead.
+**Deprecated**, use [addFromFile](#addfromfile) instead.
 
 You can define the name of the methods in the model that will provide the remote method definition.
 
