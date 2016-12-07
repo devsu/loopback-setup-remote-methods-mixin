@@ -32,7 +32,8 @@ Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html
 ...
   "mixins": {
     "SetupRemoteMethods": {
-      "disableAllExcept": ["create", "prototype.updateAttributes"]
+      "disableAllExcept": ["create", "prototype.updateAttributes"],
+      "addFromFile": './common/models/mymodel-remotes.js'
     }
   }
 ...
