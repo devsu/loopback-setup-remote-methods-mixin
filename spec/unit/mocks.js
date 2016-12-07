@@ -8,6 +8,7 @@ module.exports = {
 function getModelMock() {
   let theModel = {
     sharedClass: {},
+    modelName: 'MyModel',
   };
   theModel.on = function(event, cb) {
     if (event === 'attached') {

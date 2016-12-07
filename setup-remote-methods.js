@@ -1,73 +1,124 @@
 'use strict';
 const Utils = require('./lib/utils');
 const _ = require('lodash');
+const path = require('path');
 const debug = require('debug')('loopback:contrib:setup-remote-methods-mixin');
 
 module.exports = (Model, options) => {
   if (!Model || !Model.sharedClass) {
     return;
   }
+
+  let methodsAdded = [];
+
+  if (options.add) {
+    processAdd();
+  }
+
+  if (options.addFromFile) {
+    processAddFromFile();
+  }
+
   // wait for all models to be attached so sharedClass.methods() returns all methods
   Model.on('attached', function(server) {
     server.on('started', function() {
-      let methodsToDisable = [];
-
-      if (options.disable) {
-        methodsToDisable = options.disable;
-      }
-
-      if (options.disableAllExcept) {
-        let allMethods = Model.sharedClass.methods().map(m => {
-          return m.isStatic ? m.name : 'prototype.' + m.name;
-        });
-        methodsToDisable = _.difference(allMethods, options.disableAllExcept);
-      }
-
-      if (options.ignoreACL !== true) {
-        let authorizedAclMethods = Utils.getAuthorizedAclMethods(Model);
-        methodsToDisable = _.differenceWith(methodsToDisable, authorizedAclMethods, (a, b) => {
-          return a === b || a === 'prototype.' + b;
-        });
-      }
-
-      if (options.add) {
-        addRemoteMethods(Model, options.add);
-      }
-
-      if (methodsToDisable.length) {
-        disableRemoteMethods(Model, methodsToDisable);
+      if (options.disable || options.disableAllExcept) {
+        processDisable();
       }
     });
   });
-};
 
-function addRemoteMethods(Model, addOptions) {
-  let keys = Object.keys(addOptions);
-  keys.forEach(key => {
-    let value = addOptions[key];
-    addRemoteMethod(Model, key, value);
-  });
-}
-
-function addRemoteMethod(Model, key, value) {
-  if (typeof value === 'object' && value !== null) {
-    Model.remoteMethod(key, value);
-    return;
+  function processAdd() {
+    let definitions = {};
+    let keys = Object.keys(options.add);
+    keys.forEach(key => {
+      definitions[key] = options.add[key];
+      if (isString(options.add[key])) {
+        let definitionMethodName = options.add[key];
+        definitions[key] = getMethodWithName(definitionMethodName)();
+      }
+    });
+    addRemoteMethods(definitions);
   }
 
-  if (typeof value === 'string' || value instanceof String) {
-    let components = value.split('.');
+  function processAddFromFile() {
+    let opt = options.addFromFile;
+    let addAll = false;
+
+    if (isString(opt)) {
+      opt = {filename: opt};
+      addAll = true;
+    }
+
+    let filename = path.join(process.cwd(), opt.filename);
+    let definitions = require(filename);
+
+    if (!addAll) {
+      definitions = _.pickBy(definitions, (definition, key) => {
+        return _.includes(opt.methods, key);
+      });
+    }
+
+    definitions = _.mapValues(definitions, definitionMethod => {
+      return definitionMethod();
+    });
+
+    addRemoteMethods(definitions);
+  }
+
+  function addRemoteMethods(methodsToAdd) {
+    let methodNames = Object.keys(methodsToAdd);
+    methodNames.forEach(methodName => {
+      Model.remoteMethod(methodName, methodsToAdd[methodName]);
+    });
+    debug('Model `%s`: Add remote methods:  `%s`', Model.modelName, methodNames.join(', '));
+    methodsAdded = methodsAdded.concat(methodNames);
+  }
+
+  function getMethodWithName(methodName) {
+    let components = methodName.split('.');
     let method = components.reduce((obj, currentComponent) => {
       return obj[currentComponent];
     }, Model);
-    Model.remoteMethod(key, method());
+    return method;
   }
-}
 
-function disableRemoteMethods(Model, methodsToDisable) {
-  methodsToDisable.forEach(methodName => {
-    Model.disableRemoteMethodByName(methodName);
-  });
-  debug('Model `%s`: Disable remote methods:  `%s`', Model.modelName,
-    methodsToDisable.join(', '));
-}
+  function processDisable() {
+    let methodsToDisable = [];
+
+    if (options.disable) {
+      methodsToDisable = options.disable;
+    }
+
+    if (options.disableAllExcept) {
+      let allMethods = Model.sharedClass.methods().map(m => {
+        return m.isStatic ? m.name : 'prototype.' + m.name;
+      });
+      methodsToDisable = _.difference(allMethods, options.disableAllExcept);
+      methodsToDisable = _.difference(methodsToDisable, methodsAdded);
+    }
+
+    if (options.ignoreACL !== true) {
+      let authorizedAclMethods = Utils.getAuthorizedAclMethods(Model);
+      methodsToDisable = _.differenceWith(methodsToDisable, authorizedAclMethods, (a, b) => {
+        return a === b || a === 'prototype.' + b;
+      });
+    }
+
+    disableRemoteMethods(methodsToDisable);
+  }
+
+  function disableRemoteMethods(methodsToDisable) {
+    methodsToDisable.forEach(methodName => {
+      Model.disableRemoteMethodByName(methodName);
+    });
+    if (methodsToDisable.length) {
+      debug('Model `%s`: Disable remote methods:  `%s`', Model.modelName,
+        methodsToDisable.join(', '));
+    }
+  }
+
+  function isString(value) {
+    return (typeof value === 'string' || value instanceof String);
+  }
+};

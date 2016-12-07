@@ -1,6 +1,8 @@
 'use strict';
 
+const path = require('path');
 const setupRemoteMethods = require('../../setup-remote-methods');
+const employeeRemotes = require('./employee-remotes');
 const mocks = require('./mocks');
 
 describe('setupRemoteMethods', () => {
@@ -126,6 +128,34 @@ describe('setupRemoteMethods', () => {
         expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('prototype.five');
       });
     });
+
+    it('should not disable methods added by the "add" option', () => {
+      options.ignoreACL = true;
+      options.add = {'two': {}};
+      setupRemoteMethods(MyModel, options);
+      expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(4);
+      expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('two');
+    });
+
+    it('should not disable methods added by the "addFromFile" option', () => {
+      options.ignoreACL = true;
+      options.addFromFile = './spec/unit/employee-remotes.js';
+      setupRemoteMethods(MyModel, options);
+      expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(4);
+      expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('one');
+      expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('two');
+    });
+
+    it('should not disable methods added by the "addFromFile" option', () => {
+      options.ignoreACL = true;
+      options.addFromFile = {
+        filename: './spec/unit/employee-remotes.js',
+        methods: ['two'],
+      };
+      setupRemoteMethods(MyModel, options);
+      expect(MyModel.disableRemoteMethodByName).toHaveBeenCalledTimes(4);
+      expect(MyModel.disableRemoteMethodByName).not.toHaveBeenCalledWith('two');
+    });
   });
 
   describe('add', () => {
@@ -180,6 +210,57 @@ describe('setupRemoteMethods', () => {
         expect(MyModel.remoteMethod).toHaveBeenCalledTimes(2);
         expect(MyModel.remoteMethod).toHaveBeenCalledWith('greet', methodDefinition);
         expect(MyModel.remoteMethod).toHaveBeenCalledWith('ping', methodDefinition2);
+      });
+    });
+  });
+
+  describe('addFromFile', () => {
+    let originalCWD;
+
+    beforeAll(() => {
+      // Modifying process.cwd, to test that it will be taken into account when defining the definitions path.
+      originalCWD = process.cwd();
+      process.cwd = () => {
+        return path.join(originalCWD, 'spec');
+      };
+    });
+
+    afterAll(() => {
+      // reverting the change we made
+      process.cwd = originalCWD;
+    });
+
+    describe('when receiving the definition as an object', () => {
+      beforeEach(() => {
+        options = {
+          addFromFile: {
+            // the path is relative to the process.cwd we defined above
+            filename: './unit/employee-remotes.js',
+            methods: ['one'],
+          },
+        };
+      });
+
+      it('should add the specified methods from the definitions', () => {
+        setupRemoteMethods(MyModel, options);
+        expect(MyModel.remoteMethod).toHaveBeenCalledTimes(1);
+        expect(MyModel.remoteMethod).toHaveBeenCalledWith('one', employeeRemotes.one());
+      });
+    });
+
+    describe('when receiving the definition as an string', () => {
+      beforeEach(() => {
+        options = {
+          // the path is relative to the process.cwd we defined above
+          addFromFile: './unit/employee-remotes.js',
+        };
+      });
+
+      it('should add all remote methods from the definitions', () => {
+        setupRemoteMethods(MyModel, options);
+        expect(MyModel.remoteMethod).toHaveBeenCalledTimes(2);
+        expect(MyModel.remoteMethod).toHaveBeenCalledWith('one', employeeRemotes.one());
+        expect(MyModel.remoteMethod).toHaveBeenCalledWith('two', employeeRemotes.two());
       });
     });
   });

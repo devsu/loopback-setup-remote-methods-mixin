@@ -2,7 +2,9 @@
   "extends": "loopback",
   "globals": {
     "expect": false,
-    "jasmine": false
+    "jasmine": false,
+    "beforeAll": false,
+    "afterAll": false
   },
   "rules": {
     "max-len": ["error", 100, 4, {"ignoreComments": true, "ignoreUrls": true,
