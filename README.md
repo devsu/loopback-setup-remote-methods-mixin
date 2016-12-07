@@ -41,12 +41,12 @@ Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html
 ## Options
 
 - [disable](#disable)
-- [disableAllExcept](#disableAllExcept)
-- [ignoreACL](#ignoreACL)
+- [disableAllExcept](#disableallexcept)
+- [ignoreACL](#ignoreacl)
 - [add](#add)
   - [add using JSON](#add-using-json)
   - [add using a JS file](#add-using-js-in-the-model) (Deprecated, use **addFromFile** instead)
-- [addFromFile](#addFromFile)
+- [addFromFile](#addfromfile)
 
 ### disable
 
