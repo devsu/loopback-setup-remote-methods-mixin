@@ -219,9 +219,9 @@ describe('setupRemoteMethods', () => {
 
     beforeAll(() => {
       // Modifying process.cwd, to test that it will be taken into account when defining the definitions path.
-      originalCWD = process.cwd();
+      originalCWD = process.cwd;
       process.cwd = () => {
-        return path.join(originalCWD, 'spec');
+        return path.join(originalCWD(), 'spec');
       };
     });
 
