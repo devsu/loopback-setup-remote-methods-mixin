@@ -38,6 +38,9 @@ Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html
   }
 ...
 ```
+List of default remote methods
+
+http://loopback.io/doc/en/lb3/Exposing-models-over-REST.html#predefined-remote-methods
 
 ## Options
 
