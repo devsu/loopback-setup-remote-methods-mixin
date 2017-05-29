@@ -12,7 +12,9 @@ npm install --save loopback-setup-remote-methods-mixin
 
 ### As a mixin (recommended)
 
-First, modify your server/model-config.json _meta.mixins property to include the path to this module:
+First, modify your server/model-config.json to include the path to this module:
+
+For LB3, mixins should be declared in the `_meta.mixins` property. For LB2, mixins should be declared in the `mixins` property.
 
 ```json
 {
