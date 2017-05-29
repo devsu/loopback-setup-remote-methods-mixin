@@ -30,7 +30,7 @@ For LB3, mixins should be declared in the `_meta.mixins` property. For LB2, mixi
 }
 ```
 
-Then you can [use the mixin](https://loopback.io/doc/en/lb2/Defining-mixins.html#enable-a-model-with-mixins) from your model definition files:
+Then you can [use the mixin](https://loopback.io/doc/en/lb3/Defining-mixins.html#enable-a-model-with-mixins) from your model definition files:
 
 ```json
 ...
@@ -97,7 +97,7 @@ This option works together with `disable` and `disableAllExcept`. If **true**, i
 
 ### add
 
-It adds new remote methods to the model. This is similar to what's planned for the [Methods](https://loopback.io/doc/en/lb2/Model-definition-JSON-file.html#methods) section. (Which is not yet implemented. This option will be deprecated when that happens.)
+It adds new remote methods to the model. This is similar to what's planned for the [Methods](https://loopback.io/doc/en/lb3/Model-definition-JSON-file.html#methods) section. (Which is not yet implemented. This option will be deprecated when that happens.)
  
 #### Add using JSON
 
