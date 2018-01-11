@@ -22,7 +22,7 @@ module.exports = (Model, options) => {
   // wait for all models to be attached so sharedClass.methods() returns all methods
   Model.on('attached', function(server) {
     server.on('started', function() {
-      if (options.disable || options.disableAllExcept) {
+      if (options.disable || options.disableAllExcept || options.relations) {
         processDisable();
       }
     });
@@ -85,16 +85,34 @@ module.exports = (Model, options) => {
 
   function processDisable() {
     let methodsToDisable = [];
+    let methodsToKeep = [];
 
     if (options.disable) {
       methodsToDisable = options.disable;
     }
 
     if (options.disableAllExcept) {
+      methodsToKeep = options.disableAllExcept
       let allMethods = Model.sharedClass.methods().map(m => {
         return m.isStatic ? m.name : 'prototype.' + m.name;
       });
-      methodsToDisable = _.difference(allMethods, options.disableAllExcept);
+      
+      if(options.relations) {
+        let allRelations = Object.keys(Model.settings.relations);
+        let relationNames = Object.keys(options.relations);
+        allMethods.forEach(method => {
+          _.intersection(allRelations, relationNames).forEach(relationName => {
+            if (options.relations[relationName].disableAllExcept) {
+              options.relations[relationName].disableAllExcept.forEach(relationMethod => {
+                if(method === 'prototype.__' + relationMethod + '__' + relationName) {
+                  methodsToKeep.push(method);
+                }
+              });
+            }
+          });
+        });
+      }
+      methodsToDisable = _.difference(allMethods, methodsToKeep);
       methodsToDisable = _.difference(methodsToDisable, methodsAdded);
     }
 
