@@ -21,11 +21,9 @@ module.exports = (Model, options) => {
 
   // wait for all models to be attached so sharedClass.methods() returns all methods
   Model.on('attached', function(server) {
-    server.on('started', function() {
-      if (options.disable || options.disableAllExcept) {
-        processDisable();
-      }
-    });
+    if (options.disable || options.disableAllExcept) {
+      processDisable();
+    }
   });
 
   function processAdd() {
@@ -94,6 +92,7 @@ module.exports = (Model, options) => {
       let allMethods = Model.sharedClass.methods().map(m => {
         return m.isStatic ? m.name : 'prototype.' + m.name;
       });
+      allMethods = allMethods.concat(relationMethods());
       methodsToDisable = _.difference(allMethods, options.disableAllExcept);
       methodsToDisable = _.difference(methodsToDisable, methodsAdded);
     }
@@ -106,6 +105,31 @@ module.exports = (Model, options) => {
     }
 
     disableRemoteMethods(methodsToDisable);
+  }
+
+  function relationMethods() {
+    const relationMethods = []
+    try
+        {
+            Object.keys(Model.definition.settings.relations).forEach(function(relation)
+            {
+              if (Model.definition.settings.relations[relation].type=='hasMany') {
+                relationMethods.push('prototype.__findById__' + relation);
+                relationMethods.push('prototype.__destroyById__' + relation);
+                relationMethods.push('prototype.__updateById__' + relation);
+                relationMethods.push('prototype.__exists__' + relation);
+                relationMethods.push('prototype.__link__' + relation);
+                relationMethods.push('prototype.__get__' + relation);
+                relationMethods.push('prototype.__create__' + relation);
+                relationMethods.push('prototype.__update__' + relation);
+                relationMethods.push('prototype.__destroy__' + relation);
+                relationMethods.push('prototype.__unlink__' + relation);
+                relationMethods.push('prototype.__count__' + relation);
+                relationMethods.push('prototype.__delete__' + relation);
+              }
+            });
+        } catch(err) {}
+    return relationMethods;
   }
 
   function disableRemoteMethods(methodsToDisable) {
