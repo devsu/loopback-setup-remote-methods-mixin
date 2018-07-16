@@ -150,24 +150,22 @@ module.exports = (Model, options) => {
 
   function relationMethods() {
     const relationMethods = [];
-    try {
-      Object.keys(Model.definition.settings.relations).forEach(function(relation) {
-        if (Model.definition.settings.relations[relation].type=='hasMany') {
-          relationMethods.push('prototype.__findById__' + relation);
-          relationMethods.push('prototype.__destroyById__' + relation);
-          relationMethods.push('prototype.__updateById__' + relation);
-          relationMethods.push('prototype.__exists__' + relation);
-          relationMethods.push('prototype.__link__' + relation);
-          relationMethods.push('prototype.__get__' + relation);
-          relationMethods.push('prototype.__create__' + relation);
-          relationMethods.push('prototype.__update__' + relation);
-          relationMethods.push('prototype.__destroy__' + relation);
-          relationMethods.push('prototype.__unlink__' + relation);
-          relationMethods.push('prototype.__count__' + relation);
-          relationMethods.push('prototype.__delete__' + relation);
-        }
+    // Not fully tested, but based on documentation from
+    // https://loopback.io/doc/en/lb2/Accessing-related-models.html
+    // and https://loopback.io/doc/en/lb3/Accessing-related-models.html
+    const methodsByRelationType = {
+      'belongsTo': ['get'],
+      'hasOne': ['create', 'get', 'update', 'destroy'],
+      'hasMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
+      'hasManyThrough': ['count', 'create', 'delete', 'destroyById', 'exists', 'findById', 'get', 'link', 'updateById', 'unlink'],
+      'hasAndBelongsToMany': ['link', 'unlink'],
+    };
+    Object.keys(Model.definition.settings.relations).forEach(function(relationName) {
+      const relation = Model.definition.settings.relations[relationName];
+      methodsByRelationType[relation.type].forEach(function(methodName) {
+        relationMethods.push('prototype.__' + methodName + '__' + relationName);
       });
-    } catch(err) {}
+    });
     return relationMethods;
   }
 
