@@ -82,18 +82,42 @@ module.exports = (Model, options) => {
   }
 
   function processDisable() {
+    let allMethods = null;
     let methodsToDisable = [];
     let methodsToKeep = [];
 
+    function getAllMethods() {
+      // Cache allMethods on demand as it is used in multiple places, but isn't always needed.
+      if (!allMethods) {
+        allMethods = Model.sharedClass.methods().map(m => {
+          return m.isStatic ? m.name : 'prototype.' + m.name;
+        });
+      }
+      return allMethods;
+    }
+
+    function expandWildCards(methods) {
+      let results = [];
+      methods.forEach(methodName => {
+        let pattern = methodName.indexOf('*') !== -1 &&
+          new RegExp('^' + methodName.replace(/\./g, '\\.').replace(/\*/g, '(.*?)') + '$');
+        if (pattern) {
+          let matched = getAllMethods().filter(name => pattern.test(name));
+          results = results.concat(matched);
+        } else {
+          results.push(methodName);
+        }
+      });
+      return results;
+    }
+
     if (options.disable) {
-      methodsToDisable = options.disable;
+      methodsToDisable = expandWildCards(options.disable);
     }
 
     if (options.disableAllExcept) {
-      methodsToKeep = options.disableAllExcept;
-      let allMethods = Model.sharedClass.methods().map(m => {
-        return m.isStatic ? m.name : 'prototype.' + m.name;
-      });
+      allMethods = getAllMethods();
+      methodsToKeep = expandWildCards(options.disableAllExcept);
       allMethods = allMethods.concat(relationMethods());
       if(options.relations) {
         let allRelations = Object.keys(Model.settings.relations);
