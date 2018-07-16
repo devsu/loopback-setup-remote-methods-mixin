@@ -108,27 +108,25 @@ module.exports = (Model, options) => {
   }
 
   function relationMethods() {
-    const relationMethods = []
-    try
-        {
-            Object.keys(Model.definition.settings.relations).forEach(function(relation)
-            {
-              if (Model.definition.settings.relations[relation].type=='hasMany') {
-                relationMethods.push('prototype.__findById__' + relation);
-                relationMethods.push('prototype.__destroyById__' + relation);
-                relationMethods.push('prototype.__updateById__' + relation);
-                relationMethods.push('prototype.__exists__' + relation);
-                relationMethods.push('prototype.__link__' + relation);
-                relationMethods.push('prototype.__get__' + relation);
-                relationMethods.push('prototype.__create__' + relation);
-                relationMethods.push('prototype.__update__' + relation);
-                relationMethods.push('prototype.__destroy__' + relation);
-                relationMethods.push('prototype.__unlink__' + relation);
-                relationMethods.push('prototype.__count__' + relation);
-                relationMethods.push('prototype.__delete__' + relation);
-              }
-            });
-        } catch(err) {}
+    const relationMethods = [];
+    try {
+      Object.keys(Model.definition.settings.relations).forEach(function(relation) {
+        if (Model.definition.settings.relations[relation].type=='hasMany') {
+          relationMethods.push('prototype.__findById__' + relation);
+          relationMethods.push('prototype.__destroyById__' + relation);
+          relationMethods.push('prototype.__updateById__' + relation);
+          relationMethods.push('prototype.__exists__' + relation);
+          relationMethods.push('prototype.__link__' + relation);
+          relationMethods.push('prototype.__get__' + relation);
+          relationMethods.push('prototype.__create__' + relation);
+          relationMethods.push('prototype.__update__' + relation);
+          relationMethods.push('prototype.__destroy__' + relation);
+          relationMethods.push('prototype.__unlink__' + relation);
+          relationMethods.push('prototype.__count__' + relation);
+          relationMethods.push('prototype.__delete__' + relation);
+        }
+      });
+    } catch(err) {}
     return relationMethods;
   }
 
