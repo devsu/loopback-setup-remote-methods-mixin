@@ -94,7 +94,7 @@ module.exports = (Model, options) => {
                 methodsToKeep.push(method);
               }
             });
-            methodsToDisable = _.difference(allRelationMethods, methodsToKeep);
+            methodsToDisable = methodsToDisable.concat(_.difference(allRelationMethods, methodsToKeep));
           }
         });
       });
