@@ -50,6 +50,8 @@ http://loopback.io/doc/en/lb3/Exposing-models-over-REST.html#predefined-remote-m
 
 - [disable](#disable)
 - [disableAllExcept](#disableallexcept)
+- [relations](#relations)
+  - [disableAllExcept](#disableallexcept)
 - [ignoreACL](#ignoreacl)
 - [add](#add)
   - [add using JSON](#add-using-json)
@@ -68,6 +70,8 @@ Disable the defined remote methods. For example, to disable the `create` and the
   }
 ```
 
+Allows wildcards with `*` (not fully tested though)
+
 ### disableAllExcept
 
 Disable all the remote methods, except the defined on the options. For example, to disable all except `create` and `updateAttributes` remote methods: 
@@ -76,6 +80,24 @@ Disable all the remote methods, except the defined on the options. For example, 
   "mixins": {
     "SetupRemoteMethods": {
       "disableAllExcept": ["create", "prototype.updateAttributes"]
+    }
+  }
+```
+
+Allows wildcards with `*` (not fully tested though)
+
+### relations
+
+Allows to setup some options per relation.
+
+```json
+  "mixins": {
+    "SetupRemoteMethods": {
+      "relations": {
+        "customer": {
+          "disableAllExcept": ["create", "get"]          
+        }
+      }
     }
   }
 ```

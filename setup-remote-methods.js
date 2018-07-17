@@ -10,6 +10,7 @@ module.exports = (Model, options) => {
   }
 
   let methodsAdded = [];
+  let allMethods = null;
 
   if (options.add) {
     processAdd();
@@ -20,7 +21,7 @@ module.exports = (Model, options) => {
   }
 
   // wait for all models to be attached so sharedClass.methods() returns all methods
-  Model.on('attached', function(server) {
+  Model.on('attached', function() {
     if (options.disable || options.disableAllExcept || options.relations) {
       processDisable();
     }
@@ -86,47 +87,24 @@ module.exports = (Model, options) => {
     let methodsToDisable = [];
     let methodsToKeep = [];
 
-    function getAllMethods() {
-      // Cache allMethods on demand as it is used in multiple places, but isn't always needed.
-      if (!allMethods) {
-        allMethods = Model.sharedClass.methods().map(m => {
-          return m.isStatic ? m.name : 'prototype.' + m.name;
-        });
-      }
-      return allMethods;
-    }
-
-    function expandWildCards(methods) {
-      let results = [];
-      methods.forEach(methodName => {
-        let pattern = methodName.indexOf('*') !== -1 &&
-          new RegExp('^' + methodName.replace(/\./g, '\\.').replace(/\*/g, '(.*?)') + '$');
-        if (pattern) {
-          let matched = getAllMethods().filter(name => pattern.test(name));
-          results = results.concat(matched);
-        } else {
-          results.push(methodName);
-        }
-      });
-      return results;
-    }
-
     if (options.disable) {
       methodsToDisable = expandWildCards(options.disable);
     }
 
-    if (options.disableAllExcept) {
+    if (options.disableAllExcept || options.relations) {
       allMethods = getAllMethods();
-      methodsToKeep = expandWildCards(options.disableAllExcept);
-      allMethods = allMethods.concat(relationMethods());
-      if(options.relations) {
+      methodsToKeep = allMethods;
+      if (options.disableAllExcept) {
+        methodsToKeep = expandWildCards(options.disableAllExcept);
+      }
+      if (options.relations) {
         let allRelations = Object.keys(Model.settings.relations);
         let relationNames = Object.keys(options.relations);
         allMethods.forEach(method => {
           _.intersection(allRelations, relationNames).forEach(relationName => {
             if (options.relations[relationName].disableAllExcept) {
               options.relations[relationName].disableAllExcept.forEach(relationMethod => {
-                if(method === 'prototype.__' + relationMethod + '__' + relationName) {
+                if (method === 'prototype.__' + relationMethod + '__' + relationName) {
                   methodsToKeep.push(method);
                 }
               });
@@ -148,6 +126,32 @@ module.exports = (Model, options) => {
     disableRemoteMethods(methodsToDisable);
   }
 
+  function getAllMethods() {
+    // Cache allMethods on demand as it is used in multiple places, but isn't always needed.
+    if (!allMethods) {
+      allMethods = Model.sharedClass.methods().map(m => {
+        return m.isStatic ? m.name : 'prototype.' + m.name;
+      });
+      allMethods = allMethods.concat(relationMethods());
+    }
+    return allMethods;
+  }
+
+  function expandWildCards(methods) {
+    let results = [];
+    methods.forEach(methodName => {
+      let pattern = methodName.indexOf('*') !== -1 &&
+        new RegExp('^' + methodName.replace(/\./g, '\\.').replace(/\*/g, '(.*?)') + '$');
+      if (pattern) {
+        let matched = getAllMethods().filter(name => pattern.test(name));
+        results = results.concat(matched);
+      } else {
+        results.push(methodName);
+      }
+    });
+    return results;
+  }
+
   function relationMethods() {
     const relationMethods = [];
     // Not fully tested, but based on documentation from
@@ -157,12 +161,19 @@ module.exports = (Model, options) => {
       'belongsTo': ['get'],
       'hasOne': ['create', 'get', 'update', 'destroy'],
       'hasMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
-      'hasManyThrough': ['count', 'create', 'delete', 'destroyById', 'exists', 'findById', 'get', 'link', 'updateById', 'unlink'],
+      'hasManyThrough': ['count', 'create', 'delete', 'destroyById', 'exists', 'findById',
+        'get', 'link', 'updateById', 'unlink'],
       'hasAndBelongsToMany': ['link', 'unlink'],
+      'embedsOne': ['create', 'get', 'update', 'destroy'],
+      'embedsMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
     };
     Object.keys(Model.definition.settings.relations).forEach(function(relationName) {
       const relation = Model.definition.settings.relations[relationName];
-      methodsByRelationType[relation.type].forEach(function(methodName) {
+      const methodsByRelation = methodsByRelationType[relation.type];
+      if (!methodsByRelation) {
+        return;
+      }
+      methodsByRelation.forEach(function(methodName) {
         relationMethods.push('prototype.__' + methodName + '__' + relationName);
       });
     });

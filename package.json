@@ -1,10 +1,9 @@
 {
   "name": "loopback-setup-remote-methods-mixin",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Mixin for Loopback, to easily disable remote methods and setup new ones from the model configuration file.",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/jasmine/bin/jasmine.js",
     "lint": "eslint .",
     "posttest": "npm run lint"
   },
