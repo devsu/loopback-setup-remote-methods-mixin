@@ -51,7 +51,7 @@ http://loopback.io/doc/en/lb3/Exposing-models-over-REST.html#predefined-remote-m
 - [disable](#disable)
 - [disableAllExcept](#disableallexcept)
 - [relations](#relations)
-  - [disableAllExcept](#disableallexcept)
+  - disableAllExcept
 - [ignoreACL](#ignoreacl)
 - [add](#add)
   - [add using JSON](#add-using-json)
@@ -88,7 +88,7 @@ Allows wildcards with `*` (not fully tested though)
 
 ### relations
 
-Allows to setup some options per relation.
+Allows to setup some options per relation. Currently only `disableAllExcept` is supported.
 
 ```json
   "mixins": {
