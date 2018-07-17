@@ -10,7 +10,6 @@ module.exports = (Model, options) => {
   }
 
   let methodsAdded = [];
-  let allMethods = null;
 
   if (options.add) {
     processAdd();
@@ -74,16 +73,8 @@ module.exports = (Model, options) => {
     methodsAdded = methodsAdded.concat(methodNames);
   }
 
-  function getMethodWithName(methodName) {
-    let components = methodName.split('.');
-    let method = components.reduce((obj, currentComponent) => {
-      return obj[currentComponent];
-    }, Model);
-    return method;
-  }
-
   function processDisable() {
-    let allMethods = null;
+    const allMethods = getAllMethods();
     let methodsToDisable = [];
     let methodsToKeep = [];
 
@@ -91,27 +82,26 @@ module.exports = (Model, options) => {
       methodsToDisable = expandWildCards(options.disable);
     }
 
-    if (options.disableAllExcept || options.relations) {
-      allMethods = getAllMethods();
-      methodsToKeep = allMethods;
-      if (options.disableAllExcept) {
-        methodsToKeep = expandWildCards(options.disableAllExcept);
-      }
-      if (options.relations) {
-        let allRelations = Object.keys(Model.settings.relations);
-        let relationNames = Object.keys(options.relations);
-        allMethods.forEach(method => {
-          _.intersection(allRelations, relationNames).forEach(relationName => {
-            if (options.relations[relationName].disableAllExcept) {
-              options.relations[relationName].disableAllExcept.forEach(relationMethod => {
-                if (method === 'prototype.__' + relationMethod + '__' + relationName) {
-                  methodsToKeep.push(method);
-                }
-              });
-            }
-          });
+    if (options.relations) {
+      const allRelations = Object.keys(Model.settings.relations);
+      let relationNames = Object.keys(options.relations);
+      allMethods.forEach(method => {
+        _.intersection(allRelations, relationNames).forEach(relationName => {
+          if (options.relations[relationName].disableAllExcept) {
+            let allRelationMethods = getRelationMethodsByRelationName(relationName);
+            options.relations[relationName].disableAllExcept.forEach(relationMethod => {
+              if (method === 'prototype.__' + relationMethod + '__' + relationName) {
+                methodsToKeep.push(method);
+              }
+            });
+            methodsToDisable = _.difference(allRelationMethods, methodsToKeep);
+          }
         });
-      }
+      });
+    }
+
+    if (options.disableAllExcept) {
+      methodsToKeep = methodsToKeep.concat(expandWildCards(options.disableAllExcept));
       methodsToDisable = _.difference(allMethods, methodsToKeep);
       methodsToDisable = _.difference(methodsToDisable, methodsAdded);
     }
@@ -126,15 +116,19 @@ module.exports = (Model, options) => {
     disableRemoteMethods(methodsToDisable);
   }
 
+  function getMethodWithName(methodName) {
+    let components = methodName.split('.');
+    let method = components.reduce((obj, currentComponent) => {
+      return obj[currentComponent];
+    }, Model);
+    return method;
+  }
+
   function getAllMethods() {
-    // Cache allMethods on demand as it is used in multiple places, but isn't always needed.
-    if (!allMethods) {
-      allMethods = Model.sharedClass.methods().map(m => {
-        return m.isStatic ? m.name : 'prototype.' + m.name;
-      });
-      allMethods = allMethods.concat(relationMethods());
-    }
-    return allMethods;
+    const allMethods = Model.sharedClass.methods().map(m => {
+      return m.isStatic ? m.name : 'prototype.' + m.name;
+    });
+    return allMethods.concat(getAllRelationsMethods());
   }
 
   function expandWildCards(methods) {
@@ -152,30 +146,37 @@ module.exports = (Model, options) => {
     return results;
   }
 
-  function relationMethods() {
-    const relationMethods = [];
-    // Not fully tested, but based on documentation from
-    // https://loopback.io/doc/en/lb2/Accessing-related-models.html
-    // and https://loopback.io/doc/en/lb3/Accessing-related-models.html
-    const methodsByRelationType = {
-      'belongsTo': ['get'],
-      'hasOne': ['create', 'get', 'update', 'destroy'],
-      'hasMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
-      'hasManyThrough': ['count', 'create', 'delete', 'destroyById', 'exists', 'findById',
-        'get', 'link', 'updateById', 'unlink'],
-      'hasAndBelongsToMany': ['link', 'unlink'],
-      'embedsOne': ['create', 'get', 'update', 'destroy'],
-      'embedsMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
-    };
+  // Not fully tested, but based on documentation from
+  // https://loopback.io/doc/en/lb2/Accessing-related-models.html
+  // and https://loopback.io/doc/en/lb3/Accessing-related-models.html
+  const methodsByRelationType = {
+    'belongsTo': ['get'],
+    'hasOne': ['create', 'get', 'update', 'destroy'],
+    'hasMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
+    'hasManyThrough': ['count', 'create', 'delete', 'destroyById', 'exists', 'findById',
+      'get', 'link', 'updateById', 'unlink'],
+    'hasAndBelongsToMany': ['link', 'unlink'],
+    'embedsOne': ['create', 'get', 'update', 'destroy'],
+    'embedsMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
+  };
+
+  function getAllRelationsMethods() {
+    let relationMethods = [];
     Object.keys(Model.definition.settings.relations).forEach(function(relationName) {
-      const relation = Model.definition.settings.relations[relationName];
-      const methodsByRelation = methodsByRelationType[relation.type];
-      if (!methodsByRelation) {
-        return;
-      }
-      methodsByRelation.forEach(function(methodName) {
-        relationMethods.push('prototype.__' + methodName + '__' + relationName);
-      });
+      relationMethods = relationMethods.concat(getRelationMethodsByRelationName(relationName));
+    });
+    return relationMethods;
+  }
+
+  function getRelationMethodsByRelationName(relationName) {
+    const relationMethods = [];
+    const relation = Model.definition.settings.relations[relationName];
+    const methodsByRelation = methodsByRelationType[relation.type];
+    if (!methodsByRelation) {
+      return;
+    }
+    methodsByRelation.forEach(function(methodName) {
+      relationMethods.push('prototype.__' + methodName + '__' + relationName);
     });
     return relationMethods;
   }
