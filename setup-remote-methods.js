@@ -155,7 +155,8 @@ module.exports = (Model, options) => {
     'hasMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
     'hasManyThrough': ['count', 'create', 'delete', 'destroyById', 'exists', 'findById',
       'get', 'link', 'updateById', 'unlink'],
-    'hasAndBelongsToMany': ['link', 'unlink'],
+    'hasAndBelongsToMany': ['count', 'create', 'delete', 'destroyById', 'exists', 'findById',
+      'get', 'link', 'updateById', 'unlink'],
     'embedsOne': ['create', 'get', 'update', 'destroy'],
     'embedsMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
   };
