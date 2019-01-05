@@ -172,7 +172,11 @@ module.exports = (Model, options) => {
   function getRelationMethodsByRelationName(relationName) {
     const relationMethods = [];
     const relation = Model.definition.settings.relations[relationName];
-    const methodsByRelation = methodsByRelationType[relation.type];
+    let relationType = relation.type;
+    if (relationType === 'hasMany' && relation.through !== undefined) {
+      relationType = 'hasManyThrough';
+    }
+    const methodsByRelation = methodsByRelationType[relationType];
     if (!methodsByRelation) {
       return;
     }
