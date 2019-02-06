@@ -1,6 +1,6 @@
 {
   "name": "loopback-setup-remote-methods-mixin",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Mixin for Loopback, to easily disable remote methods and setup new ones from the model configuration file.",
   "main": "index.js",
   "scripts": {
