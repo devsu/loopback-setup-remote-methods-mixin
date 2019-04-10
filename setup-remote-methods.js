@@ -94,7 +94,8 @@ module.exports = (Model, options) => {
                 methodsToKeep.push(method);
               }
             });
-            methodsToDisable = methodsToDisable.concat(_.difference(allRelationMethods, methodsToKeep));
+            methodsToDisable = methodsToDisable
+              .concat(_.difference(allRelationMethods, methodsToKeep));
           }
         });
       });
@@ -159,6 +160,8 @@ module.exports = (Model, options) => {
       'get', 'link', 'updateById', 'unlink'],
     'embedsOne': ['create', 'get', 'update', 'destroy'],
     'embedsMany': ['count', 'create', 'delete', 'destroyById', 'findById', 'get', 'updateById'],
+    'referencesMany': ['count', 'create', 'delete', 'destroyById', 'exists', 'findById',
+      'get', 'link', 'updateById', 'unlink'],
   };
 
   function getAllRelationsMethods() {
